@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  BelongsToMany,
-  Column,
-  DataType,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import { BelongsToMany, Column, DataType, Model, Table } from 'sequelize-typescript';
 import { Role } from 'src/roles/roles.model';
 import { UserRole } from 'src/roles/user-roles.model';
 
@@ -32,10 +26,6 @@ export class User extends Model<User, UserCreationAttributes> {
   @ApiProperty()
   @Column({ type: DataType.STRING, allowNull: false })
   password: string;
-
-  @ApiProperty()
-  @Column({ type: DataType.BIGINT, unique: true, defaultValue: 1000 })
-  coinBalance: number;
 
   @BelongsToMany(() => Role, () => UserRole)
   roles: Role[];
