@@ -5,6 +5,9 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'src/users/users.model';
 
+const BAD_CREDS_MSG = 'Bad credentials.';
+const USER_EXISTS_MSG = 'User already exsists!';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -20,7 +23,7 @@ export class AuthService {
   async registration(userDto: CreateUserDto) {
     const candidate = await this.userService.getUserByEmail(userDto.email);
     if (candidate) {
-      throw new HttpException('User already exsists!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(USER_EXISTS_MSG, HttpStatus.BAD_REQUEST);
     }
 
     const hashPassword = await bcrypt.hash(userDto.password, 5);
@@ -39,13 +42,13 @@ export class AuthService {
 
   private async validateUser(userDto: CreateUserDto) {
     const user = await this.userService.getUserByEmail(userDto.email);
-    if (!user) throw new UnauthorizedException({ message: 'Invalid email.' });
+    if (!user) throw new UnauthorizedException({ message: BAD_CREDS_MSG });
 
     const passwordEquals = await bcrypt.compare(userDto.password, user.password);
     if (passwordEquals) {
       return user;
     }
 
-    throw new UnauthorizedException({ message: 'Invalid password.' });
+    throw new UnauthorizedException({ message: BAD_CREDS_MSG });
   }
 }
