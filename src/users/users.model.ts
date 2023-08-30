@@ -20,6 +20,14 @@ export class User extends Model<User, UserCreationAttributes> {
   id: number;
 
   @ApiProperty()
+  @Column({ type: DataType.STRING, allowNull: false })
+  firstName: string;
+
+  @ApiProperty()
+  @Column({ type: DataType.STRING, allowNull: false })
+  lastName: string;
+
+  @ApiProperty()
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   email: string;
 

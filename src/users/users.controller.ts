@@ -11,18 +11,9 @@ import { RolesAuthGuard } from 'src/auth/roles-auth.guard';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @ApiOperation({ summary: 'Create a user' })
-  @ApiResponse({ status: 200, type: User })
-  @Post()
-  @Roles('ADMIN')
-  @UseGuards(RolesAuthGuard)
-  create(@Body() userDto: CreateUserDto) {
-    return this.usersService.createUser(userDto);
-  }
-
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, type: [User] })
-  @Roles('USER')
+  @Roles('ADMIN')
   @UseGuards(RolesAuthGuard)
   @Get()
   getAll() {

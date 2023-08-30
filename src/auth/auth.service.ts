@@ -4,6 +4,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'src/users/users.model';
+import { LoginDto } from './dto/login.dto';
 
 const BAD_CREDS_MSG = 'Bad credentials.';
 const USER_EXISTS_MSG = 'User already exsists!';
@@ -15,8 +16,8 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(userDto: CreateUserDto) {
-    const user = await this.validateUser(userDto);
+  async login(loginDto: LoginDto) {
+    const user = await this.validateUser(loginDto);
     return this.generateToken(user);
   }
 
@@ -25,7 +26,6 @@ export class AuthService {
     if (candidate) {
       throw new HttpException(USER_EXISTS_MSG, HttpStatus.BAD_REQUEST);
     }
-
     const hashPassword = await bcrypt.hash(userDto.password, 5);
     const user = await this.userService.createUser({
       ...userDto,
@@ -36,15 +36,16 @@ export class AuthService {
   }
 
   private async generateToken(user: User) {
-    const payload = { email: user.email, id: user.id, roles: user.roles };
+    const roles = user.roles.map((role) => role.value);
+    const payload = { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, roles };
     return { token: this.jwtService.sign(payload) };
   }
 
-  private async validateUser(userDto: CreateUserDto) {
-    const user = await this.userService.getUserByEmail(userDto.email);
+  private async validateUser(loginDto: LoginDto) {
+    const user = await this.userService.getUserByEmail(loginDto.email);
     if (!user) throw new UnauthorizedException({ message: BAD_CREDS_MSG });
 
-    const passwordEquals = await bcrypt.compare(userDto.password, user.password);
+    const passwordEquals = await bcrypt.compare(loginDto.password, user.password);
     if (passwordEquals) {
       return user;
     }
