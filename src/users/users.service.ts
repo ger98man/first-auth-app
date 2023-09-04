@@ -20,6 +20,15 @@ export class UsersService {
     return user;
   }
 
+  async updateUserLoginTime(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+    user.lastLogin = new Date();
+
+    await user.save();
+  }
+
   async getAllUsers() {
     const users = await this.userRepository.findAll({ include: { all: true } });
     return users;

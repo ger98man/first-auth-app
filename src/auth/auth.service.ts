@@ -18,6 +18,8 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto);
+    await this.userService.updateUserLoginTime(user.email);
+
     return this.generateToken(user);
   }
 
@@ -30,6 +32,7 @@ export class AuthService {
     const user = await this.userService.createUser({
       ...userDto,
       password: hashPassword,
+      lastLogin: new Date(),
     });
 
     return this.generateToken(user);

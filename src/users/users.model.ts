@@ -35,6 +35,10 @@ export class User extends Model<User, UserCreationAttributes> {
   @Column({ type: DataType.STRING, allowNull: false })
   password: string;
 
+  @ApiProperty()
+  @Column({ type: DataType.DATE, allowNull: false })
+  lastLogin: Date;
+
   @BelongsToMany(() => Role, () => UserRole)
   roles: Role[];
 }
